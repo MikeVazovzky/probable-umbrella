@@ -5,7 +5,6 @@ import { QueryFailedError, Repository } from "typeorm";
 import { CreateUserDto } from "./dto/create-user.dto.js";
 import { PostgresDriverError } from "src/common/interfaces/postgres-error.interface.js";
 import { PostgresErrorCode } from "./enums/Postgres-error-code.js";
-import { DeleteResult } from "typeorm/browser";
 import { UpdateUserDto } from "./dto/update-user.dto.js";
 
 @Injectable()
@@ -48,17 +47,12 @@ export class UserRepository {
                         'Пользователь с таким именем уже существует',
                     );
                 }
+                
             }
 
             throw error;
         }
-    }
 
-    async remove(id: number): Promise<void> {
-        const deleteResult = await this.userRepository.delete(id);
-        if (deleteResult.affected === 0) {
-            throw new NotFoundException('Пользователь не найден');
-        }
     }
 
     async update(
@@ -68,7 +62,7 @@ export class UserRepository {
         const user = await this.findById(id);
 
         Object.assign(user, updateUserDto);
-        
+
         try {
             return await this.userRepository.save(user);
         } catch(error) {
@@ -85,4 +79,13 @@ export class UserRepository {
         }
 
     }
+
+        async remove(id: number): Promise<void> {
+        const deleteResult = await this.userRepository.delete(id);
+        if (deleteResult.affected === 0) {
+            throw new NotFoundException('Пользователь не найден');
+        }
+
+    }
+
 }

@@ -1,15 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { User } from './entities/user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
-import { ConflictException } from '@nestjs/common';
-import { QueryFailedError } from 'typeorm';
-import { PostgresDriverError } from 'src/common/interfaces/postgres-error.interface.js';
-import { PostgresErrorCode } from './enums/Postgres-error-code.js';
 import { UserRepository } from './user.repository.js';
 
 @Injectable()
@@ -60,7 +54,9 @@ export class UserService {
             ...updateUserDto,
             password: hashedPassword,
         };
+
     }
+
     return this.userRepository.update(id, userData)
 }
      
@@ -71,5 +67,7 @@ export class UserService {
         return {
             message: 'Пользователь успешно удалён',
         };
+
     }
+    
 }
