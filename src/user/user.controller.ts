@@ -7,26 +7,29 @@ import { UpdateUserDto } from './dto/update-user.dto.js';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-@Post()
-create(@Body() createUserDto: CreateUserDto){
-  return this.userService.create(createUserDto);
- }
-@Patch(':id')
-update(
-  @Param('id', ParseIntPipe)id: number,
-  @Body() UpdateUserDto: UpdateUserDto,
-) {
-  return this.userService.update(id, UpdateUserDto);
-}
- 
  @Get()
  findAll() {
   return this.userService.findAll();
- }
+}
+
  @Get(':id')
  findone(@Param('id', ParseIntPipe)id: number){
   return this.userService.findOne(id);
 }
+
+@Post()
+create(@Body() createUserDto: CreateUserDto){
+  return this.userService.create(createUserDto);
+ }
+
+@Patch(':id')
+update(
+  @Param('id', ParseIntPipe)id: number,
+  @Body() updateUserDto: UpdateUserDto,
+) {
+  return this.userService.update(id, updateUserDto);
+}
+
 @Delete(':id')
 remove(@Param('id', ParseIntPipe) id: number){
   return this.userService.remove(id);

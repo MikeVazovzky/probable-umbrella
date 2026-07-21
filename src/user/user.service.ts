@@ -10,66 +10,66 @@ import { ConflictException } from '@nestjs/common';
 import { QueryFailedError } from 'typeorm';
 import { PostgresDriverError } from 'src/common/interfaces/postgres-error.interface.js';
 import { PostgresErrorCode } from './enums/Postgres-error-code.js';
+import { UserRepository } from './user.repository.js';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User)
-        private readonly userRepository: Repository<User>,
+        private readonly userRepository: UserRepository,
 
         private readonly configService: ConfigService,
     ) {}
 
-    async create(createUserDto: CreateUserDto): Promise<User> {
-        const user = this.userRepository.create(createUserDto);
-
-        const saltRounds = Number(this.configService.getOrThrow('BCRYPT_SALT_ROUNDS'));
-
-        user.password = await bcrypt.hash(user.password, saltRounds );
-
-        try{
-            return await this.userRepository.save(user);
-        } catch(error) {
-            if (error instanceof QueryFailedError){
-                const driverError = error.driverError as PostgresDriverError;
-                if (driverError.code === PostgresErrorCode.UniqueViolation) {
-                    throw new ConflictException(
-                        'Пользователь с таким именем уже существует',
-                    );
-                }
-            }
-
-            throw error;
-        }
-    }
     async findAll(): Promise<User[]> {
-        return this.userRepository.find();
+        return this.userRepository.findAll();
     }
 
     async findOne(id: number): Promise<User> {
-        const user = await this.userRepository.findOneBy({
-            id,
-        });
+        const user = await this.userRepository.findById(id);
 
         if (!user) {
             throw new NotFoundException('Пользователь не найден');
         }
+
         return user;
     }
-    async update(id: number, UpdateUserDto: UpdateUserDto): Promise<User> {
-        const user = await this.findOne(id);
 
-        Object.assign(user, UpdateUserDto);
+    async create(createUserDto: CreateUserDto): Promise<User> {
 
-        return this.userRepository.save(user);
+        const saltRounds = Number(this.configService.getOrThrow('BCRYPT_SALT_ROUNDS'));
+
+        const hashedPassword = await bcrypt.hash(createUserDto.password, saltRounds );
+
+        return this.userRepository.create(
+            createUserDto,
+            hashedPassword,
+        );
+
     }
-    async remove(id: number): Promise<{message: string}> {
-        const result = await this.userRepository.delete(id);
 
-        if (result.affected === 0) {
-            throw new NotFoundException('Пользователь не найден');
-        }
-        return {message: 'Пользователь успешно удалён',
+    async update(id: number,updateUserDto: UpdateUserDto,): Promise<User> {
+
+        let userData = updateUserDto;
+
+        if (updateUserDto.password) {
+            const saltRounds = Number(this.configService.getOrThrow('BCRYPT_SALT_ROUNDS'),);
+
+            const hashedPassword = await bcrypt.hash(updateUserDto.password, saltRounds);
+
+        userData = {
+            ...updateUserDto,
+            password: hashedPassword,
+        };
+    }
+    return this.userRepository.update(id, userData)
+}
+     
+     async remove(id: number): Promise<{message: string}> {
+
+        await this.userRepository.remove(id);
+
+        return {
+            message: 'Пользователь успешно удалён',
         };
     }
 }
