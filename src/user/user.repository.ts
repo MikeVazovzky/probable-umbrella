@@ -23,6 +23,10 @@ export class UserRepository {
         return(user);
     }
 
+    async findByUsername(username: string): Promise<User | null> {
+        return this.userRepository.findOneBy({ username });
+    }
+
     findAll(): Promise<User[]> {
         return this.userRepository.find();
     }
@@ -47,14 +51,14 @@ export class UserRepository {
                         'Пользователь с таким именем уже существует',
                     );
                 }
-                
+
             }
 
             throw error;
         }
 
     }
-
+    
     async update(
         id: number,
         updateUserDto: UpdateUserDto,

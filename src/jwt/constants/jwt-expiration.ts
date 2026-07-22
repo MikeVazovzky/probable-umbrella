@@ -1,0 +1,1 @@
+export const JWT_EXPIRATION = 900000; //15minutes
