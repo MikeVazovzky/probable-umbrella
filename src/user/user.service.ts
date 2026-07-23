@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity.js';
-import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateUserDto } from './dto/update-user.dto.js';
+import { CreateUserDto } from './dto/request/create-user.dto.js';
+import { UpdateUserDto } from './dto/request/update-user.dto.js';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './user.repository.js';

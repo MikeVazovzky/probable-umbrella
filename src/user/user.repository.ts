@@ -2,10 +2,10 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import { InjectRepository } from "@nestjs/typeorm";
 import { User} from "./entities/user.entity.js";
 import { QueryFailedError, Repository } from "typeorm";
-import { CreateUserDto } from "./dto/create-user.dto.js";
+import { CreateUserDto } from "./dto/request/create-user.dto.js";
 import { PostgresDriverError } from "src/common/interfaces/postgres-error.interface.js";
 import { PostgresErrorCode } from "./enums/Postgres-error-code.js";
-import { UpdateUserDto } from "./dto/update-user.dto.js";
+import { UpdateUserDto } from "./dto/request/update-user.dto.js";
 
 @Injectable()
 export class UserRepository {
